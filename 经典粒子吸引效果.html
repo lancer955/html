@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<!-- saved from url=(0047)http://mazehd.com/test/Effect/AttractPoint.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="viewport" content="width=device-width, user-scalable=no">
+	<title>经典粒子吸引效果</title>
+<style>
+html,body{
+	margin:0;
+	padding:0;
+	width:100vw;
+	height:100vh;
+	overflow:hidden;
+}
+canvas{
+	position:fixed;
+	left:0;
+	top:0;
+	transform-origin:0 0;
+}
+</style>
+</head>
+<body>
+<canvas class="canvas" width="1912" height="928" style="transform: scale(1); width: 1912px; height: 928px;"></canvas>
+<script>
+"use strict";
+var 粒子列表=[];
+var 鼠标数据={移动:{x:0,y:0}};
+var canvas=document.querySelector('canvas');
+var ctx=canvas.getContext("2d");
+var 总宽度,总高度,较小总尺寸,基础宽度,基础高度,较小基础尺寸;
+function 窗口尺寸变化(){
+	总宽度=window.innerWidth*window.devicePixelRatio;
+	总高度=window.innerHeight*window.devicePixelRatio;
+	var tcanvas=document.querySelectorAll('.canvas');
+	for(var i=0;i<tcanvas.length;i++){
+		tcanvas[i].style='transform: scale('+1/window.devicePixelRatio+')';
+		tcanvas[i].style.width  = 总宽度+'px';
+		tcanvas[i].style.height = 总高度+'px';
+		tcanvas[i].width=总宽度;
+		tcanvas[i].height=总高度;
+	}
+	基础宽度=总宽度/100;
+	基础高度=总高度/100;
+	较小总尺寸=Math.min(总宽度,总高度);
+	较小基础尺寸=Math.min(基础宽度,基础高度);
+}
+窗口尺寸变化();
+window.onresize=function(){窗口尺寸变化();};
+function 游戏运作(){
+	if(粒子列表.length<100 && Math.random()>0.9){
+		粒子列表.push({x:Math.random()*总宽度,y:Math.random()*总高度,
+		vx:Math.random()-0.5,vy:Math.random()-0.5});
+	}
+	for(var i=0;i<粒子列表.length;i++){
+		var 粒子=粒子列表[i];
+		粒子.x+=粒子.vx;
+		粒子.y+=粒子.vy;
+		if(粒子.x<0 || 粒子.y<0 || 粒子.x>总宽度 || 粒子.y>总高度){
+			粒子列表.splice(i,1);
+			i--;
+		}
+		var 与鼠标距离=Math.sqrt(
+		(粒子.x-鼠标数据.移动.x)*(粒子.x-鼠标数据.移动.x)+
+		(粒子.y-鼠标数据.移动.y)*(粒子.y-鼠标数据.移动.y)
+		);
+		if(与鼠标距离<较小基础尺寸*20 && 与鼠标距离>较小基础尺寸*5){
+			粒子.vx+=0.2*(鼠标数据.移动.x-粒子.x)/(较小基础尺寸*10);
+			粒子.vy+=0.2*(鼠标数据.移动.y-粒子.y)/(较小基础尺寸*10);
+		}
+		粒子.vx+=(Math.random()-0.5)*0.1;
+		粒子.vy+=(Math.random()-0.5)*0.1;
+		粒子.vx*=0.99;
+		粒子.vy*=0.99;
+	}
+}
+function 游戏绘制(){
+	ctx.setTransform(1,0,0,1,0,0);
+	ctx.clearRect(0,0,总宽度,总高度);
+	ctx.strokeStyle="rgba(0,0,0,0.3)";
+	for(var i=0;i<粒子列表.length;i++){
+		var 粒子=粒子列表[i];
+		ctx.beginPath();
+		ctx.arc(粒子.x,粒子.y,较小基础尺寸/2,0,Math.PI*2);
+		ctx.fill();
+		for(var j=i+1;j<粒子列表.length;j++){
+			var 另一个粒子=粒子列表[j];
+			var 粒子距离=Math.sqrt(
+			(粒子.x-另一个粒子.x)*(粒子.x-另一个粒子.x)+
+			(粒子.y-另一个粒子.y)*(粒子.y-另一个粒子.y)
+			);
+			if(粒子距离>较小基础尺寸*10)continue;
+			ctx.beginPath();
+			ctx.moveTo(粒子.x,粒子.y);
+			ctx.lineTo(另一个粒子.x,另一个粒子.y);
+			ctx.stroke();
+		}
+	}
+}
+function 帧循环(){
+	游戏运作();
+	游戏绘制();
+	requestAnimationFrame(帧循环);
+}
+帧循环();
+canvas.onmousemove=canvas.ontouchmove=function(e){
+	var x,y;
+	if(!event.touches){
+		x=e.clientX*window.devicePixelRatio;
+		y=e.clientY*window.devicePixelRatio;
+	}else{
+		x=e.touches[0].clientX*window.devicePixelRatio;
+		y=e.touches[0].clientY*window.devicePixelRatio;
+	}
+	鼠标数据.移动.x=x;
+	鼠标数据.移动.y=y;
+}
+</script>
+
+<div id="extwaiokist" style="display:none" v="efmeb" q="b1876230" c="132.2" i="143" u="5.684" s="03132514" sg="svr_03252514-ga_03132514-bai_03222522" d="1" w="false" e="" a="2" m="BMe=" vn="9axur"><div id="extwaigglbit" style="display:none" v="efmeb" q="b1876230" c="132.2" i="143" u="5.684" s="03132514" sg="svr_03252514-ga_03132514-bai_03222522" d="1" w="false" e="" a="2" m="BMe="></div></div></body></html>
